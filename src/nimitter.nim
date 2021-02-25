@@ -1,11 +1,15 @@
 import httpClient
 
 import
-    nimitterpkg/[config, objs, getmethod, mainmenu]
+    nimitterpkg/[accountinfo, objs, getmethod, mainmenu]
 
 
 # main
 when isMainModule:
+    var 
+        client = newHttpClient()
+        res: Response
+
     var keys: Keys
     keys.apiKey   = apiKey
     keys.apiSec   = apiSec
@@ -18,16 +22,12 @@ when isMainModule:
             quit 1
 
     var userInfo: UserInfo
-    userInfo.userName   = userName
     userInfo.screenName = screenName
-
-    if userInfo.userName == "" or userInfo.screenName == "":
-        echo "Error: you must set both of user name and screen name."
+    if userInfo.screenName == "":
+        echo "Error: you must set screen name."
         quit 1
-
-    var 
-        client = newHttpClient()
-        res: Response
+    userInfo.userName = client.getUserName(keys, userInfo.screenName)
+    if userInfo.userName == "": quit 1
 
     if client.checkLimitState(keys).bool == false:
         echo "Error: GET /statuses/home_timeline request has reached the limit."
@@ -36,7 +36,7 @@ when isMainModule:
     res = client.getHomeTimeline(keys)
 
     setControlCHook(proc() {.noconv.} =
-        echo "\n", "Quit Nimitter..."
+        echo "\n\nExit Nimitter..."
         quit 1)
 
 

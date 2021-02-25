@@ -97,7 +97,7 @@ proc unretweetTweet(client: HttpClient, keys: Keys, res: Response) =
     echo client.postUnretweet(keys, tweets[id-1]["id_str"].getStr())
 
 
-proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: UserInfo) =
+proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
     echo "Which user's profile do you want to display?"
     var 
         otherUserName = readLineFromStdin(" > @")
@@ -112,15 +112,16 @@ proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: UserInfo) =
         discard readLineFromStdin("Press any key to return to home...")
 
 
-proc mainMenu*(client: HttpClient, keys:Keys, userInfo: UserInfo, res: var Response) =
+proc mainMenu*(client: HttpClient, keys:Keys, userInfo: var UserInfo, res: var Response) =
     res.viewTimeline
-
+#[
     echo "\n", """
 [Select operation]
   Reload:1,      Tweet:2,        Reply:3,
   Favorite:4,    Unfavorite:5,   Retweet:6,  Unretweet:7,
   My profile:8,  User profile:9  About:10"""
-    stdout.write(" > ")
+]#
+    stdout.write("""$1@$2> """ % [userInfo.userName, userInfo.screenName])
 
     var op = stdin.readLine
     case op
@@ -134,6 +135,8 @@ proc mainMenu*(client: HttpClient, keys:Keys, userInfo: UserInfo, res: var Respo
     of "8", "p"  : client.profileMenu(keys, userInfo)
     of "9", "up" : client.viewUserProfile(keys, userInfo)
     of "10", "a" : viewSystemInfo()
+
+    of "h", "help": echo "Help menu"
 
     # for developer command
     of "checklimit", "CheckLimit", "cl", "CL": client.getRateLimit(keys)

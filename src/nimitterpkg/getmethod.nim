@@ -98,6 +98,19 @@ $3
         result = ""
 
 
+proc getUserName*(client: HttpClient, keys: Keys, user: string): string =
+    var 
+        resourceUrl = getUserProfileUrl & "?screen_name=" & user
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    if res.status.contains("200"):
+        let userInfo = res.body.parseJson
+        result = userInfo["name"].getStr()
+    else:
+        echo "User not found."
+        result = ""
+
+
 proc getRateLimit*(client: HttpClient, keys: Keys) =
     var
         requestResource = "statuses,users,account"

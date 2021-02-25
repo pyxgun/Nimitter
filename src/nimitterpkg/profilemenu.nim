@@ -1,5 +1,5 @@
 import
-    httpClient, json, rdstdin
+    httpClient, json, rdstdin, strutils
 
 import
     objs, postmethod, getmethod
@@ -7,10 +7,10 @@ import
 from subproc import selectTweet
 
 
-proc updateProfile(client: HttpClient, keys: Keys) = 
+proc updateProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) = 
     echo """
-Which items do you want to change?
-  Name:1, Bio:2, Location:3, URL:4"""
+ --Which items do you want to change?
+  Name:1,  Bio:2,  Location:3,  URL:4"""
     stdout.write(" > ")
     var
         op = stdin.readLine
@@ -31,6 +31,9 @@ Which items do you want to change?
     except IOError:
         echo "Changes have been canceled."
         discard readLineFromStdin("Press any key to return profile menu...")
+    if param == "name":
+        userInfo.userName = client.getUserName(keys, userInfo.screenName)
+
 
 
 proc deleteTweet(client: HttpClient, keys: Keys, res: Response) =
@@ -56,19 +59,19 @@ proc deleteAllTweet(client: HttpClient, keys: Keys, userInfo: UserInfo) =
 
 
 
-proc profileMenu*(client: HttpClient, keys: Keys, userInfo: UserInfo) = 
+proc profileMenu*(client: HttpClient, keys: Keys, userInfo: var UserInfo) = 
     while true:
         echo client.getUserProfile(keys, userInfo.screenName)
         var res = client.getUserTimeline(keys, userInfo.screenName)
 
         echo "\n", """
 [Select operation]
-  Edit profile:1, Delete tweet:2, Home:3"""
-        stdout.write(" > ")
+  Edit profile:1,  Delete tweet:2,  Return to Home:3"""
+        stdout.write("""$1@$2> """ % [userInfo.userName, userInfo.screenName])
 
         var op = stdin.readLine
         case op
-        of "1", "e": client.updateProfile(keys)
+        of "1", "e": client.updateProfile(keys, userInfo)
         of "2", "d": client.deleteTweet(keys, res)
         of "3", "h": break
         of "destroyall", "DestroyAll": client.deleteAllTweet(keys, userInfo)

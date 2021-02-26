@@ -16,6 +16,7 @@ const
     postFavoriteUrl        = "https://api.twitter.com/1.1/favorites/create.json"
     postUnfavoriteUrl      = "https://api.twitter.com/1.1/favorites/destroy.json"
     postUpdateProfileUrl   = "https://api.twitter.com/1.1/account/update_profile.json"
+    postMediaUrl           = "https://upload.twitter.com/1.1/media/upload.json"
 
 
 

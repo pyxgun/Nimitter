@@ -7,6 +7,7 @@ import
 from subproc import selectTweet
 
 
+
 proc updateProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) = 
     echo """
  --Which items do you want to change?
@@ -24,7 +25,7 @@ proc updateProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
     else:
         echo "Abort"
         return
-    
+
     try:
         contents = readLineFromStdin(" New >> ")
         echo client.postUpdateProfile(keys, param, contents)
@@ -40,12 +41,14 @@ proc deleteTweet(client: HttpClient, keys: Keys, res: Response) =
     var
         tweets = res.body.parseJson
         id = selectTweet("Which Tweet do you want to delete?")
-    stdout.write("Delete tweet? This can't be undone. Do you want to continue? [Y/n]: ")
-    var confirm = stdin.readLine
-    if confirm == "y":
-        echo client.postDestroy(keys, tweets[id-1]["id_str"].getStr())
-    else:
-        echo "Abort."
+    if id != 0:
+        stdout.write("Delete tweet? This can't be undone. Do you want to continue? [Y/n]: ")
+        var confirm = stdin.readLine
+        if confirm == "y":
+            echo client.postDestroy(keys, tweets[id-1]["id_str"].getStr())
+        else: echo "Abort."
+    else: echo "Abort."
+
 
 
 proc deleteAllTweet(client: HttpClient, keys: Keys, userInfo: UserInfo) =
@@ -59,19 +62,16 @@ proc deleteAllTweet(client: HttpClient, keys: Keys, userInfo: UserInfo) =
 
 
 
-proc profileMenu*(client: HttpClient, keys: Keys, userInfo: var UserInfo) = 
+proc profileMenu*(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
     while true:
-        echo client.getUserProfile(keys, userInfo.screenName)
+        discard client.getUserProfile(keys, userInfo.screenName)
         var res = client.getUserTimeline(keys, userInfo.screenName)
 
-        echo "\n", """
-[Select operation]
-  Edit profile:1,  Delete tweet:2,  Return to Home:3"""
-        stdout.write("""$1@$2> """ % [userInfo.userName, userInfo.screenName])
+        stdout.write("""$1@$2:PROFILE # """ % [userInfo.userName, userInfo.screenName])
 
         var op = stdin.readLine
         case op
         of "1", "e": client.updateProfile(keys, userInfo)
         of "2", "d": client.deleteTweet(keys, res)
-        of "3", "h": break
-        of "destroyall", "DestroyAll": client.deleteAllTweet(keys, userInfo)
+        of "3", "b": break
+        of "destroyall", "da": client.deleteAllTweet(keys, userInfo)

@@ -1,7 +1,8 @@
-import httpClient
+import
+    httpClient, terminal, os, strutils, base64, json
 
 import
-    nimitterpkg/[accountinfo, objs, getmethod, mainmenu]
+    nimitterpkg/[accountinfo, objs, getmethod, mainmenu, postmethod, subproc]
 
 
 # main
@@ -37,6 +38,7 @@ when isMainModule:
 
     setControlCHook(proc() {.noconv.} =
         echo "\n\nExit Nimitter..."
+        system.addQuitProc(resetAttributes)
         quit 1)
 
 

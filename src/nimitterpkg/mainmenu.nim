@@ -2,7 +2,7 @@ import
     rdstdin, strutils, httpClient, json
 
 import
-    objs, postmethod, getmethod, profilemenu, systeminfo
+    objs, subproc, postmethod, getmethod, profilemenu, systeminfo, help
 
 from subproc import selectTweet
 
@@ -101,27 +101,18 @@ proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
     echo "Which user's profile do you want to display?"
     var 
         otherUserName = readLineFromStdin(" > @")
-        prof: string
     if otherUserName == userInfo.screenName:
         client.profileMenu(keys, userInfo)
     else:
-        prof = client.getUserProfile(keys, otherUserName)
-        if prof != "":
-            echo prof
+        if client.getUserProfile(keys, otherUserName).contains("200"):
             discard client.getUserTimeline(keys, otherUserName)
         discard readLineFromStdin("Press any key to return to home...")
 
 
 proc mainMenu*(client: HttpClient, keys:Keys, userInfo: var UserInfo, res: var Response) =
     res.viewTimeline
-#[
-    echo "\n", """
-[Select operation]
-  Reload:1,      Tweet:2,        Reply:3,
-  Favorite:4,    Unfavorite:5,   Retweet:6,  Unretweet:7,
-  My profile:8,  User profile:9  About:10"""
-]#
-    stdout.write("""$1@$2> """ % [userInfo.userName, userInfo.screenName])
+
+    stdout.write("""$1@$2:HOME # """ % [userInfo.userName, userInfo.screenName])
 
     var op = stdin.readLine
     case op
@@ -136,9 +127,9 @@ proc mainMenu*(client: HttpClient, keys:Keys, userInfo: var UserInfo, res: var R
     of "9", "up" : client.viewUserProfile(keys, userInfo)
     of "10", "a" : viewSystemInfo()
 
-    of "h", "help": echo "Help menu"
+    of "h", "help": help()
 
     # for developer command
-    of "checklimit", "CheckLimit", "cl", "CL": client.getRateLimit(keys)
+    of "checklimit", "cl": client.getRateLimit(keys)
     else:
         discard

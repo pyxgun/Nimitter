@@ -20,6 +20,7 @@ $ git clone https://github.com/pyxgun/Nimitter.git
 
 ### Compile
 ```bash
+$ cd src
 $ nim c -d:ssl nimitter.nim
 ```
 
@@ -49,26 +50,30 @@ When you run the program, your home timeline will be displayed and the program w
 ## Home Timeline
 In this section, you can use the following command.  
 
-* <kbd>1</kbd> or rl : Reload
-* <kbd>2</kbd> or t : Tweet
-* <kbd>3</kbd> or r : Reply
-* <kbd>4</kbd> or f : Favorite(like)
-* <kbd>5</kbd> or uf : Un-favorite(un-like)
-* <kbd>6</kbd> or rt : Retweet
-* <kbd>7</kbd> or urt : Un-retweet
+* <kbd>1</kbd> or rl : reload
+* <kbd>2</kbd> or t : tweet
+* <kbd>3</kbd> or r : reply
+* <kbd>4</kbd> or f : favorite(like)
+* <kbd>5</kbd> or uf : un-favorite(un-like)
+* <kbd>6</kbd> or rt : retweet
+* <kbd>7</kbd> or urt : un-retweet
 * <kbd>8</kbd> or p : view own profile
 * <kbd>9</kbd> or up: view other user profile
+* <kbd>10</kbd> or vl : view link on default browser
+* <kbd>11</kbd> or a : about Nimitter
+* <kbd>h</kbd> or help : view help
 
 ### Tweet
 You can tweet text including line breaks.  
 ```
- --What's happening?
+[What's happening?]
 This is sample tweet (ENTER)
 Use the Enter key to start a new line. (ENTER)
+(ctrl+c)
 ```
-When you have finished writing, press <kbd>ctrl</kbd>+<kbd>D</kbd> to send tweet.  
+When you have finished writing, press <kbd>ctrl</kbd>+<kbd>C</kbd> to send tweet.  
 And be sure to press the Enter key on the last line of the text you want to send before sending it.  
-If you want to cancel tweet, press <kbd>ctrl</kbd>+<kbd>D</kbd> without typing anything.
+If you want to cancel tweet, press <kbd>ctrl</kbd>+<kbd>C</kbd> without typing anything.
 
 ### Reply
 First, select the tweet you want to reply to.  
@@ -80,7 +85,7 @@ In the timeline, the user name is preceded by an index number. You can select a 
 
 Which Tweet do you want to reply?
  > 1
- --Tweet your reply
+[Tweet your reply]
 ```
 Like this.  
 The input method is the same as for Tweet.
@@ -95,7 +100,8 @@ In this section, you can use the following command.
 
 * <kbd>1</kbd> or <kbd>e</kbd> : Edit profile
 * <kbd>2</kbd> or <kbd>d</kbd> : Delete a tweet
-* <kbd>3</kbd> or <kbd>h</kbd> : Back to Home
+* <kbd>3</kbd> or <kbd>b</kbd> : Back to Home
+* <kbd>h</kbd> or help : view help
 * destroyall or DestroyAll: Delete all you tweet
 
 ### Edit profile

@@ -1,11 +1,10 @@
 import
-    httpClient, terminal, os, strutils, base64, json
+    httpClient, terminal
 
 import
-    nimitterpkg/[accountinfo, objs, getmethod, mainmenu, postmethod, subproc]
+    nimitterpkg/[accountinfo, objs, getmethod, mainmenu]
 
 
-# main
 when isMainModule:
     var 
         client = newHttpClient()

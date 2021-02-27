@@ -23,7 +23,7 @@ const
 # GET methods
 proc getHomeTimeline*(client: HttpClient, keys: Keys, count: int = 30): Response =
     var 
-        resourceUrl = getHomeTimelineUrl & "?count=" & $count & "&include_entities=true"
+        resourceUrl = getHomeTimelineUrl & "?count=" & $count
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
     result = res

@@ -2,7 +2,7 @@ import
     httpClient, json, rdstdin, strutils
 
 import
-    objs, postmethod, getmethod
+    objs, postmethod, getmethod, help
 
 from subproc import selectTweet
 
@@ -74,4 +74,5 @@ proc profileMenu*(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
         of "1", "e": client.updateProfile(keys, userInfo)
         of "2", "d": client.deleteTweet(keys, res)
         of "3", "b": break
+        of "h", "help": help()
         of "destroyall", "da": client.deleteAllTweet(keys, userInfo)

@@ -1,5 +1,7 @@
 # Nimitter
-> Nimitter is a simple Twitter client that runs on the command line and written in Nim.
+Nimitter is a simple Twitter client that runs on the command line and written in Nim.
+
+![timelineimg](https://github.com/pyxgun/Nimitter/blob/images/ss_timeline.png?raw=true)
 
 ## Features
 
@@ -95,6 +97,9 @@ You can select a tweet by entering that number the same as for Reply.
 Un-favorite(Un-like)/Un-retweet are the same.
 
 ## Profile
+
+![profile](https://github.com/pyxgun/Nimitter/blob/images/ss_profile.png?raw=true)
+
 If you select 8 or p in Home Timeline section, you can view your own profile.  
 In this section, you can use the following command.
 

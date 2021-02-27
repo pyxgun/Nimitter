@@ -2,7 +2,7 @@ import strutils, rdstdin
 
 const
     systemName*        = "Nimitter"
-    systemVersion*     = "ver.0.1.0"
+    systemVersion*     = "ver.0.1.1"
     systemDescription* = "Simple Twitter client written in Nim"
     systemAuthor*      = "PyxGun"
     infoGit            = "https://github.com/pyxgun"

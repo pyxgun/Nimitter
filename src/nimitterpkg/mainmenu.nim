@@ -1,5 +1,5 @@
 import 
-    rdstdin, strutils, httpClient, json, browsers
+    rdstdin, strutils, httpClient, json, browsers, terminal
 
 import
     objs, subproc, postmethod, getmethod, profilemenu, systeminfo, help
@@ -8,8 +8,7 @@ import
 
 proc reloadHome(client: HttpClient, keys: Keys, res: var Response) =
     if client.checkLimitState(keys).bool == false:
-        echo "Error: GET /statuses/home_timelint request has reached the limit."
-        echo "After a while, please try again."
+        writeWithColor("Error: GET /statuses/home_timelint request has reached the limit.\nAfter a while, please try again.", fgRed)
         discard readLineFromStdin("Press any key to return to home...")
     else:
         res = client.getHomeTimeline(keys)
@@ -21,8 +20,7 @@ proc tweet(client: HttpClient, keys: Keys, res: var Response) =
         if client.postTweet(keys, contents).contains("200"):
             echo "Tweet success."
             if client.checkLimitState(keys).bool == false:
-                echo "Error: GET /statuses/home_timline request has reached the limit."
-                echo "After a while, please try again."
+                writeWithColor("Error: GET /statuses/home_timline request has reached the limit.\nAfter a while, please try again.", fgRed)
             else:
                 res = client.getHomeTimeline(keys)
         else:
@@ -43,8 +41,7 @@ proc reply(client: HttpClient, keys: Keys, res: var Response) =
         if client.postTweet(keys, contents, tw[id-1]["id_str"].getStr()).contains("200"):
             echo "Retweet success."
             if client.checkLimitState(keys).bool == false:
-                echo "Error: GET /statuses/home_timeline request has reached the limit."
-                echo "After a while, please try again."
+                writeWithColor("Error: GET /statuses/home_timeline request has reached the limit.\nAfter a while, please try again.", fgRed)
             else:
                 res = client.getHomeTimeline(keys)
         else:
@@ -108,7 +105,7 @@ proc viewLink(res: Response) =
         idx = selectTweet("Which URL do you want to view?")
         urls = tweets[idx-1]["entities"]["urls"]
     if urls.len == 0:
-        echo "Can't open this tweet.", "\n", "Press any key to return home..."
+        echo "Can't open this tweet.\nPress any key to return home..."
     else:
         openDefaultBrowser(urls[0]["url"].getStr())
         echo "Press any key to return home..."

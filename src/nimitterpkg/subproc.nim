@@ -29,17 +29,44 @@ proc selectTweet*(msg: string): int =
     else: result = 0
 
 
-proc writeWithColor(s: string, color: ForegroundColor) =
+proc writeWithColor*(s: string, color: ForegroundColor) =
     stdout.setForegroundColor(color)
     stdout.write(s)
     stdout.resetAttributes
 
 
-proc viewProfileContent*(user: JsonNode) =
+proc checkConnections(connections: JsonNode): bool =
+    result = false
+    for i in connections:
+        if i.getStr() == "following":
+            writeWithColor("[Following] ", fgBlue)
+            result = true
+        elif i.getStr() == "followed_by":
+            writeWithColor("[Follows you] ", fgMagenta)
+            result = true
+        elif i.getStr() == "following_requested":
+            writeWithColor("[Follower requests]", fgGreen)
+            result = true
+        elif i.getStr() == "blocking":
+            writeWithColor("[Blocked] ", fgRed)
+            result = true
+        elif i.getStr() == "muting":
+            writeWithColor("[Muting] ", fgRed)
+            result = true
+
+
+proc viewProfileContent*(user: JsonNode, res: Response) =
     echo "[Profile]"
     writeWithColor(user["name"].getStr(), fgCyan)
     stdout.write("@")
     writeWithColor(user["screen_name"].getStr()&"\n", fgGreen)
+    if res != nil:
+        var connections = res.body.parseJson
+        connections = connections[0]["connections"]
+        if checkConnections(connections):
+            echo ""
+    else:
+        writeWithColor("! Not available the relationship information\n  due to the request has reached the limit.\n", fgRed)
     echo user["description"].getStr() & "\n"
     writeWithColor(" " & $user["friends_count"], fgYellow)
     stdout.write(" following,")

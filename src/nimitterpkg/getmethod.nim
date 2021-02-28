@@ -17,7 +17,27 @@ const
     getUserTimelineUrl*  = "https://api.twitter.com/1.1/statuses/user_timeline.json"
     getUserProfileUrl    = "https://api.twitter.com/1.1/users/show.json"
     getRateLimitUrl      = "https://api.twitter.com/1.1/application/rate_limit_status.json"
+    getFriendshipLookUrl = "https://api.twitter.com/1.1/friendships/lookup.json"
 
+
+
+
+proc checkLimitState*(client: HttpClient, keys: Keys): int =
+    var
+        resourceUrl = getRateLimitUrl & "?resources=statuses"
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+        limitHomeTimeline = res.body.parseJson
+    result = limitHomeTimeline["resources"]["statuses"]["/statuses/home_timeline"]["remaining"].getInt
+
+
+proc checkLimitFriendship(client: HttpClient, keys: Keys): int =
+    var 
+        resourceUrl = getRateLimitUrl & "?resources=friendships"
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+        limitFriendship = res.body.parseJson
+    result = limitFriendship["resources"]["friendships"]["/friendships/lookup"]["remaining"].getInt
 
 
 # GET methods
@@ -27,35 +47,6 @@ proc getHomeTimeline*(client: HttpClient, keys: Keys, count: int = 30): Response
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
     result = res
-
-
-proc getUserTimeline*(client: HttpClient, keys: Keys, user: string, count: int = 10): Response =
-    var
-        resourceUrl = getUserTimelineUrl & "?screen_name=" & user & "&count=" & $count
-        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
-                                    httpMethod = HttpGet)
-        timeline = res.body.parseJson
-        idx: int = 0
-    echo "[Tweets]"
-    for tw in timeline:
-        tw.viewTweetContent(idx)
-        echo ""
-        idx += 1
-    result = res
-
-
-proc getUserProfile*(client: HttpClient, keys: Keys, user: string): Response.status =
-    var
-        resourceUrl = getUserProfileUrl & "?screen_name=" & user
-        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
-                                    httpMethod = HttpGet)
-    if res.status.contains("200"):
-        let userInfo = res.body.parseJson
-        system("clear")
-        userInfo.viewProfileContent
-    else:
-        echo "User not found."
-    result = res.status
 
 
 proc getUserName*(client: HttpClient, keys: Keys, user: string): string =
@@ -69,6 +60,53 @@ proc getUserName*(client: HttpClient, keys: Keys, user: string): string =
     else:
         echo "User not found."
         result = ""
+
+
+proc getFriendshipLook*(client: HttpClient, keys: Keys, user: string): Response =
+    var
+        resourceUrl = getFriendshipLookUrl & "?screen_name=" & user
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    result = res
+
+
+proc getUserTimeline*(client: HttpClient, keys: Keys, user: string, count: int = 10): Response =
+    var
+        resourceUrl = getUserTimelineUrl & "?screen_name=" & user & "&count=" & $count
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    echo "[Tweets]"
+    if res.status.contains("200"):
+        var
+            timeline = res.body.parseJson
+            idx: int = 0
+        for tw in timeline:
+            tw.viewTweetContent(idx)
+            echo ""
+            idx += 1
+    else:
+        echo "These Tweets are protected."
+        echo "Only confirmed followers have access to @" & user & "'s Tweets.\n"
+    result = res
+
+
+proc getUserProfile*(client: HttpClient, keys: Keys, user: string): Response.status =
+    var
+        resourceUrl = getUserProfileUrl & "?screen_name=" & user
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    if res.status.contains("200"):
+        var 
+            userInfo = res.body.parseJson
+            connections: Response
+        if client.checkLimitFriendship(keys).bool:
+            connections = client.getFriendshipLook(keys, user)
+        system("clear")
+        userInfo.viewProfileContent(connections)
+    else:
+        echo "User not found."
+    result = res.status
+
 
 
 proc getRateLimit*(client: HttpClient, keys: Keys) =
@@ -113,12 +151,3 @@ proc getRateLimit*(client: HttpClient, keys: Keys) =
     echo info
     stdout.write("Press any key to quit...")
     discard stdin.readLine
-
-
-proc checkLimitState*(client: HttpClient, keys: Keys): int =
-    var
-        resourceUrl = getRateLimitUrl & "?resources=statuses"
-        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
-                                    httpMethod = HttpGet)
-        limitHomeTimeline = res.body.parseJson
-    result = limitHomeTimeline["resources"]["statuses"]["/statuses/home_timeline"]["remaining"].getInt

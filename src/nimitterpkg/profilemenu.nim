@@ -1,8 +1,8 @@
 import
-    httpClient, json, rdstdin, strutils
+    httpClient, json, rdstdin, strutils, terminal
 
 import
-    objs, postmethod, getmethod, help
+    objs, postmethod, getmethod, help, subproc
 
 from subproc import selectTweet
 
@@ -52,8 +52,7 @@ proc deleteTweet(client: HttpClient, keys: Keys, res: Response) =
 
 
 proc deleteAllTweet(client: HttpClient, keys: Keys, userInfo: UserInfo) =
-    echo "Warning - You're trying deleting all tweets. This can't be undone."
-    stdout.write("Type 'CONFIRM', then will start to delete all tweets: ")
+    writeWithColor("Warning - You're trying deleting all tweets. This can't be undone.\nType 'CONFIRM', then will start to delete all tweets: ", fgRed)
     var confirm = stdin.readLine
     if confirm == "CONFIRM" or confirm == "confirm":
         echo client.postDestroyAll(keys, userInfo.screenName)

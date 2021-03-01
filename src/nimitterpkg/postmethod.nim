@@ -16,6 +16,8 @@ const
     postFavoriteUrl        = "https://api.twitter.com/1.1/favorites/create.json"
     postUnfavoriteUrl      = "https://api.twitter.com/1.1/favorites/destroy.json"
     postUpdateProfileUrl   = "https://api.twitter.com/1.1/account/update_profile.json"
+    postFriendCreateUrl    = "https://api.twitter.com/1.1/friendships/create.json"
+    postFriendDestroyUrl   = "https://api.twitter.com/1.1/friendships/destroy.json"
 
 
 
@@ -27,18 +29,17 @@ $1@$2 - $3
 
 
 # POST methods
-proc postTweet*(client: HttpClient, keys: Keys, contents: string, reply: string = ""): Response.status =
+proc postTweet*(client: HttpClient, keys: Keys, contents: string, replyTo: string = ""): Response.status =
     var
         bodyContent: string
         tweet = contents.encoder
-    if reply != "":
-        bodyContent = "status=" & tweet & "&in_reply_to_status_id=" & reply & "&auto_populate_reply_metadata=true"
+    if replyTo != "":
+        bodyContent = "status=" & tweet & "&in_reply_to_status_id=" & replyTo & "&auto_populate_reply_metadata=true"
     else:
         bodyContent = "status=" & tweet
     var 
-        resourceUrl = bodyContent
         res = client.oAuth1Request(postTweetUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
-                                    httpMethod = HttpPost, body = resourceUrl)
+                                    httpMethod = HttpPost, body = bodyContent)
     result = res.status
 
 
@@ -100,6 +101,22 @@ proc postUpdateProfile*(client: HttpClient, keys: Keys, param: string, contents:
     var
         paramContents = contents.encoder.replace(""""""", "%22")
         resourceUrl   = postUpdateProfileUrl & "?" & param & "=" & paramContents
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpPost)
+    result = res.status
+
+
+proc postFriendCreate*(client: HttpClient, keys: Keys, user: string): Response.status =
+    var
+        resourceUrl = postFriendCreateUrl & "?screen_name=" & user
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpPost)
+    result = res.status
+
+
+proc postFriendDestroy*(client: HttpClient, keys: Keys, user: string): Response.status =
+    var
+        resourceUrl = postFriendDestroyUrl & "?screen_name=" & user
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpPost)
     result = res.status

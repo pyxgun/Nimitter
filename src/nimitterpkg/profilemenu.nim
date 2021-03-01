@@ -7,6 +7,11 @@ import
 from subproc import selectTweet
 
 
+{.push header:"<stdlib.h>".}
+proc system(cmd:cstring)
+{.pop.}
+
+
 
 proc updateProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) = 
     echo """
@@ -37,7 +42,7 @@ proc updateProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
 
 
 
-proc deleteTweet(client: HttpClient, keys: Keys, res: Response) =
+proc deleteTweet(client: HttpClient, keys: Keys, user: string, res: var Response) =
     var
         tweets = res.body.parseJson
         id = selectTweet("Which Tweet do you want to delete?")
@@ -46,6 +51,7 @@ proc deleteTweet(client: HttpClient, keys: Keys, res: Response) =
         var confirm = stdin.readLine
         if confirm == "y":
             echo client.postDestroy(keys, tweets[id-1]["id_str"].getStr())
+            res = client.getUserTimeline(keys, user)
         else: echo "Abort."
     else: echo "Abort."
 
@@ -62,16 +68,18 @@ proc deleteAllTweet(client: HttpClient, keys: Keys, userInfo: UserInfo) =
 
 
 proc profileMenu*(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
+    var res = client.getUserTimeline(keys, userInfo.screenName)
     while true:
+        system("clear")
+        res.viewTimeline
         discard client.getUserProfile(keys, userInfo.screenName)
-        var res = client.getUserTimeline(keys, userInfo.screenName)
 
         stdout.write("""$1@$2:PROFILE # """ % [userInfo.userName, userInfo.screenName])
 
         var op = stdin.readLine
         case op
         of "1", "e": client.updateProfile(keys, userInfo)
-        of "2", "d": client.deleteTweet(keys, res)
+        of "2", "d": client.deleteTweet(keys, userInfo.screenName, res)
         of "3", "b": break
         of "h", "help": help()
         of "destroyall", "da": client.deleteAllTweet(keys, userInfo)

@@ -2,8 +2,11 @@ import
     rdstdin, strutils, httpClient, json, browsers, terminal
 
 import
-    objs, subproc, postmethod, getmethod, profilemenu, systeminfo, help
+    objs, subproc, postmethod, getmethod, profilemenu, systeminfo, help, otherusermenu
 
+{.push header:"<stdlib.h>".}
+proc system(cmd:cstring)
+{.pop.}
 
 
 proc reloadHome(client: HttpClient, keys: Keys, res: var Response) =
@@ -87,18 +90,6 @@ proc unretweetTweet(client: HttpClient, keys: Keys, res: Response) =
         discard readLineFromStdin("Press any key to return to home...")
 
 
-proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
-    echo "Which user's profile do you want to display?"
-    var 
-        otherUserName = readLineFromStdin(" > @")
-    if otherUserName == userInfo.screenName:
-        client.profileMenu(keys, userInfo)
-    else:
-        if client.getUserProfile(keys, otherUserName).contains("200"):
-            discard client.getUserTimeline(keys, otherUserName)
-        discard readLineFromStdin("Press any key to return to home...")
-
-
 proc viewLink(res: Response) =
     var
         tweets = res.body.parseJson
@@ -112,8 +103,19 @@ proc viewLink(res: Response) =
     discard stdin.readLine
 
 
+proc viewUserProfile(client: HttpClient, keys: Keys, userInfo: var UserInfo) =
+    echo "Which user's profile do you want to display?"
+    var 
+        otherUserName = readLineFromStdin(" > @")
+    if otherUserName == userInfo.screenName:
+        client.profileMenu(keys, userInfo)
+    else:
+        client.otherUserMenu(keys, otherUserName, userInfo)
+
+
 
 proc mainMenu*(client: HttpClient, keys:Keys, userInfo: var UserInfo, res: var Response) =
+    system("clear")
     res.viewTimeline
 
     stdout.write("""$1@$2:HOME # """ % [userInfo.userName, userInfo.screenName])

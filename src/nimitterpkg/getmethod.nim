@@ -5,12 +5,6 @@ import
     objs, subproc
     
 
-{.push header:"<stdlib.h>".}
-proc system(cmd:cstring)
-{.pop.}
-
-
-
 # GET methods resource URL
 const
     getHomeTimelineUrl   = "https://api.twitter.com/1.1/statuses/home_timeline.json"
@@ -31,13 +25,14 @@ proc checkLimitState*(client: HttpClient, keys: Keys): int =
     result = limitHomeTimeline["resources"]["statuses"]["/statuses/home_timeline"]["remaining"].getInt
 
 
-proc checkLimitFriendship(client: HttpClient, keys: Keys): int =
+proc checkLimitFriendship*(client: HttpClient, keys: Keys): int =
     var 
         resourceUrl = getRateLimitUrl & "?resources=friendships"
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
         limitFriendship = res.body.parseJson
     result = limitFriendship["resources"]["friendships"]["/friendships/lookup"]["remaining"].getInt
+
 
 
 # GET methods
@@ -75,18 +70,6 @@ proc getUserTimeline*(client: HttpClient, keys: Keys, user: string, count: int =
         resourceUrl = getUserTimelineUrl & "?screen_name=" & user & "&count=" & $count
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
-    echo "[Tweets]"
-    if res.status.contains("200"):
-        var
-            timeline = res.body.parseJson
-            idx: int = 0
-        for tw in timeline:
-            tw.viewTweetContent(idx)
-            echo ""
-            idx += 1
-    else:
-        echo "These Tweets are protected."
-        echo "Only confirmed followers have access to @" & user & "'s Tweets.\n"
     result = res
 
 
@@ -96,13 +79,12 @@ proc getUserProfile*(client: HttpClient, keys: Keys, user: string): Response.sta
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
     if res.status.contains("200"):
-        var 
+        var
             userInfo = res.body.parseJson
             connections: Response
         if client.checkLimitFriendship(keys).bool:
             connections = client.getFriendshipLook(keys, user)
-        system("clear")
-        userInfo.viewProfileContent(connections)
+        userInfo.renderProfileContents(connections)
     else:
         echo "User not found."
     result = res.status

@@ -1,9 +1,5 @@
 import
-    strutils, rdstdin, json, HttpClient, terminal
-
-{.push header:"<stdlib.h>".}
-proc system(cmd:cstring)
-{.pop.}
+    strutils, rdstdin, json, httpClient, terminal
 
 
 proc inputContents*(msg: string): string =
@@ -55,7 +51,7 @@ proc checkConnections(connections: JsonNode): bool =
             result = true
 
 
-proc viewProfileContent*(user: JsonNode, res: Response) =
+proc renderProfileContents*(user: JsonNode, res: Response) =
     echo "[Profile]"
     writeWithColor(user["name"].getStr(), fgCyan)
     stdout.write("@")
@@ -93,7 +89,6 @@ proc viewTimeline*(res: Response) =
     var
         timeline = res.body.parseJson
         flag: bool
-    system("clear")
     for i in countdown(len(timeline)-1, 0):
         flag = false
         timeline[i].viewTweetContent(i)

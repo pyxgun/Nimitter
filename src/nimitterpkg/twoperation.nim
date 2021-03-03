@@ -42,7 +42,7 @@ proc reply*(client: HttpClient, keys: Keys, res: var Response) =
     if contents != "":
         var tw = res.body.parseJson
         if client.postTweet(keys, contents, tw[id-1]["id_str"].getStr()).contains("200"):
-            echo "Retweet success."
+            echo "Reply success."
             if client.checkLimitState(keys).bool == false:
                 writeWithColor("Error: GET /statuses/home_timeline request has reached the limit.\nAfter a while, please try again.", fgRed)
             else:

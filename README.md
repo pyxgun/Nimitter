@@ -58,15 +58,8 @@ In this menu, you can use the following command.
 * <kbd>6</kbd> or rt : retweet
 * <kbd>7</kbd> or urt : un-retweet
 * <kbd>8</kbd> or p : view own profile
-<<<<<<< HEAD
-* <kbd>9</kbd> or up: view other user profile
-* <kbd>10</kbd> or vl : view link on default browser
-* <kbd>11</kbd> or a : about Nimitter
-* <kbd>h</kbd> or help : view help
-=======
 * <kbd>9</kbd> or up : view other user profile
 * <kbd>10</kbd> or vl : view tweet on default browser
->>>>>>> working
 
 ### Tweet
 You can tweet text including line breaks.  
@@ -76,15 +69,9 @@ This is sample tweet (ENTER)
 Use the Enter key to start a new line. (ENTER)
 (ctrl+c)
 ```
-<<<<<<< HEAD
-When you have finished writing, press <kbd>ctrl</kbd>+<kbd>C</kbd> to send tweet.  
-And be sure to press the Enter key on the last line of the text you want to send before sending it.  
-If you want to cancel tweet, press <kbd>ctrl</kbd>+<kbd>C</kbd> without typing anything.
-=======
 When you have finished writing, press <kbd>ctrl</kbd>+<kbd>c</kbd> to send tweet.  
 And be sure to press the Enter key on the last line of the text you want to send before sending it.  
 If you want to cancel tweet, press <kbd>ctrl</kbd>+<kbd>c</kbd> without typing anything.
->>>>>>> working
 
 ### Reply
 First, select the tweet you want to reply to.  
@@ -112,18 +99,11 @@ Un-favorite(Un-like)/Un-retweet are the same.
 If you select <kbd>8</kbd> or p in Home Timeline menu, you can view your own profile.  
 In this menu, you can use the following command.
 
-<<<<<<< HEAD
-* <kbd>1</kbd> or <kbd>e</kbd> : Edit profile
-* <kbd>2</kbd> or <kbd>d</kbd> : Delete a tweet
-* <kbd>3</kbd> or <kbd>b</kbd> : Back to Home
-* <kbd>h</kbd> or help : view help
-=======
 * <kbd>1</kbd> or <kbd>e</kbd> : edit profile
 * <kbd>2</kbd> or <kbd>d</kbd> : delete a tweet
 * <kbd>3</kbd> or vf : view follow list
 * <kbd>4</kbd> or vfw : view follower list
 * <kbd>5</kbd> or <kbd>b</kbd> : back to Home
->>>>>>> working
 * destroyall or DestroyAll: Delete all you tweet
 
 ### Edit profile

@@ -2,11 +2,11 @@ import strutils, rdstdin
 
 const
     systemName*        = "Nimitter"
-    systemVersion*     = "ver.0.1.1"
+    systemVersion*     = "ver.0.1.3"
     systemDescription* = "Simple Twitter client written in Nim"
     systemAuthor*      = "PyxGun"
-    infoGit            = "https://github.com/pyxgun"
-    infoTwitter        = "https://twitter.com/pyxgun"
+    infoGit*           = "https://github.com/pyxgun"
+    infoTwitter*       = "https://twitter.com/pyxgun"
 
 
 proc viewSystemInfo*() =

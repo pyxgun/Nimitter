@@ -2,7 +2,7 @@ import
     oauth1, json, httpclient, strutils
 
 import
-    objs, subproc
+    objs, subproc, config
     
 
 # GET methods resource URL
@@ -12,6 +12,8 @@ const
     getUserProfileUrl    = "https://api.twitter.com/1.1/users/show.json"
     getRateLimitUrl      = "https://api.twitter.com/1.1/application/rate_limit_status.json"
     getFriendshipLookUrl = "https://api.twitter.com/1.1/friendships/lookup.json"
+    getFriendsListUrl    = "https://api.twitter.com/1.1/friends/list.json"
+    getFollowersListUrl  = "https://api.twitter.com/1.1/followers/list.json"
 
 
 
@@ -36,7 +38,7 @@ proc checkLimitFriendship*(client: HttpClient, keys: Keys): int =
 
 
 # GET methods
-proc getHomeTimeline*(client: HttpClient, keys: Keys, count: int = 30): Response =
+proc getHomeTimeline*(client: HttpClient, keys: Keys, count: int = config.numTimelineTweets): Response =
     var 
         resourceUrl = getHomeTimelineUrl & "?count=" & $count
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
@@ -65,7 +67,7 @@ proc getFriendshipLook*(client: HttpClient, keys: Keys, user: string): Response 
     result = res
 
 
-proc getUserTimeline*(client: HttpClient, keys: Keys, user: string, count: int = 10): Response =
+proc getUserTimeline*(client: HttpClient, keys: Keys, user: string, count: int = config.numUserTweets): Response =
     var
         resourceUrl = getUserTimelineUrl & "?screen_name=" & user & "&count=" & $count
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
@@ -90,10 +92,26 @@ proc getUserProfile*(client: HttpClient, keys: Keys, user: string): Response.sta
     result = res.status
 
 
+proc getFriendsList*(client: HttpClient, keys: Keys, user: string, count: int = config.numFollowsList): Response =
+    var
+        resourceUrl = getFriendsListUrl & "?screen_name=" & user & "&skip_status=true&include_user_entities=false&count=" & $count
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    result = res
+
+
+proc getFollowersList*(client: HttpClient, keys: Keys, user: string, count: int = config.numFollowersList): Response =
+    var
+        resourceUrl = getFollowersListUrl & "?screen_name=" & user & "&skip_status=true&include_user_entities=false&count=" & $count
+        res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
+                                    httpMethod = HttpGet)
+    result = res
+
+
 
 proc getRateLimit*(client: HttpClient, keys: Keys) =
     var
-        requestResource = "statuses,users,account"
+        requestResource = "statuses,users,account, friends"
         resourceUrl = getRateLimitUrl & "?resources=" & requestResource.encoder
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)

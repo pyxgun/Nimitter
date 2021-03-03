@@ -56,13 +56,11 @@ proc postDestroyAll*(client: HttpClient, keys: Keys, user: string): Response.sta
         resourceUrl = getUserTimelineUrl & "?screen_name=" & user & "&count=200"
         res = client.oAuth1Request(resourceUrl, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                     httpMethod = HttpGet)
-        tmp = client.postTweet(keys, "Begin the process of deleting all tweets.")
         timeline = res.body.parseJson
     for tw in timeline:
         var destoyReq = postDestroyUrl & "/" & $tw["id"] & ".json"
         res = client.oAuth1Request(destoyReq, keys.apiKey, keys.apiSec, keys.tokenKey, keys.tokenSec,
                                         httpMethod = HttpPost)
-    tmp = client.postTweet(keys, "The process has been completed.")
 
 
 proc postFavorite*(client: HttpClient, keys: Keys, id: string): Response.status =

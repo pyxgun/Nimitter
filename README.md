@@ -15,15 +15,9 @@ Nimitter is a simple Twitter client that runs on the command line and written in
 * Nim 1.4.2 or higher
 * [CORDEA/oauth](https://github.com/CORDEA/oauth)
 
+### build
 ```bash
-$ nimble install oauth
-$ git clone https://github.com/pyxgun/Nimitter.git
-```
-
-### Compile
-```bash
-$ cd src
-$ nim c -d:ssl nimitter.nim
+$ nimble build
 ```
 
 ## Set your information
